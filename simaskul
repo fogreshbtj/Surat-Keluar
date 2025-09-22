@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Manajemen Surat Keluar - Perkantoran</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px 15px 0 0;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .form-container {
+            background: white;
+            padding: 40px;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .form-control[readonly] {
+            background-color: #f8f9fa;
+            color: #6c757d;
+        }
+
+        select.form-control {
+            cursor: pointer;
+        }
+
+        .upload-area {
+            border: 2px dashed #bdc3c7;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .upload-area:hover {
+            border-color: #3498db;
+            background: #f1f8ff;
+        }
+
+        .upload-area i {
+            font-size: 48px;
+            color: #bdc3c7;
+            margin-bottom: 15px;
+        }
+
+        .upload-area.dragover {
+            border-color: #2ecc71;
+            background: #e8f5e9;
+        }
+
+        .camera-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .camera-preview {
+            width: 100%;
+            max-width: 300px;
+            height: 200px;
+            background: #e0e0e0;
+            border-radius: 8px;
+            margin: 15px auto;
+            display: none;
+            object-fit: cover;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .btn-success {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #27ae60;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .surat-preview {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .surat-preview img {
+            max-width: 100%;
+            border-radius: 5px;
+        }
+
+        .auto-generate {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 5px;
+            font-size: 14px;
+            color: #856404;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        .required::after {
+            content: " *";
+            color: #e74c3c;
+        }
+
+        .file-info {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .pegawai-section {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .data-preview {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .data-preview h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .data-item {
+            display: flex;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+        }
+
+        .data-label {
+            font-weight: 600;
+            min-width: 150px;
+            color: #2c3e50;
+        }
+
+        .data-value {
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-envelope"></i> Sistem Surat Keluar</h1>
+            <p>Manajemen dan Pencatatan Surat Keluar Perkantoran</p>
+        </div>
+
+        <div class="form-container">
+            <div class="success-message" id="successMessage">
+                <i class="fas fa-check-circle"></i> Data surat berhasil disimpan!
+            </div>
+
+            <form id="suratForm">
+                <div class="pegawai-section">
+                    <div class="form-group">
+                        <label for="namaPegawai" class="required">Nama Pegawai</label>
+                        <select id="namaPegawai" class="form-control" required>
+                            <option value="">Pilih Nama Pegawai</option>
+                            <option value="Ahmad Wijaya">Ahmad Wijaya</option>
+                            <option value="Siti Nurhaliza">Siti Nurhaliza</option>
+                            <option value="Budi Santoso">Budi Santoso</option>
+                            <option value="Dewi Lestari">Dewi Lestari</option>
+                            <option value="Rudi Hermawan">Rudi Hermawan</option>
+                            <option value="Maya Sari">Maya Sari</option>
+                            <option value="Joko Prasetyo">Joko Prasetyo</option>
+                            <option value="Linda Wati">Linda Wati</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="nomorSurat" class="required">Nomor Surat</label>
+                        <input type="text" id="nomorSurat" class="form-control" placeholder="Contoh: 001/SK/HRD/IX/2024" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tanggalSurat" class="required">Tanggal Surat</label>
+                        <input type="date" id="tanggalSurat" class="form-control" required>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="perihalSurat" class="required">Perihal Surat</label>
+                        <input type="text" id="perihalSurat" class="form-control" placeholder="Contoh: Pemberitahuan Rapat Rutin" required>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="tujuanSurat" class="required">Tujuan Surat</label>
+                        <input type="text" id="tujuanSurat" class="form-control" placeholder="Contoh: Kepala Bagian Keuangan" required>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="nomorSuratLengkap">Nomor Surat Lengkap (Auto-generate)</label>
+                        <input type="text" id="nomorSuratLengkap" class="form-control" readonly>
+                        <div class="auto-generate">
+                            <i class="fas fa-info-circle"></i> Nomor akan digenerate otomatis berdasarkan format
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="uploadSurat" class="required">Upload Surat (PDF/Image)</label>
+                        <div class="upload-area" id="uploadArea">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Klik untuk upload atau drop file di sini</p>
+                            <p class="file-info">Format: PDF, JPG, PNG (Maks. 5MB)</p>
+                            <input type="file" id="uploadSurat" accept=".pdf,.jpg,.jpeg,.png" style="display: none;" required>
+                        </div>
+                        <div class="surat-preview" id="suratPreview">
+                            <p>Preview:</p>
+                            <img id="previewImage" src="" alt="Preview Surat">
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Ambil Foto Surat (Optional)</label>
+                        <div class="camera-section">
+                            <video id="cameraView" width="300" height="200" style="display: none;"></video>
+                            <canvas id="cameraCanvas" style="display: none;"></canvas>
+                            <img id="capturedImage" class="camera-preview" alt="Foto Surat">
+                            
+                            <div class="button-group">
+                                <button type="button" class="btn btn-secondary" id="startCamera">
+                                    <i class="fas fa-camera"></i> Buka Kamera
+                                </button>
+                                <button type="button" class="btn btn-success" id="captureBtn" style="display: none;">
+                                    <i class="fas fa-camera-retro"></i> Ambil Foto
+                                </button>
+                                <button type="button" class="btn btn-danger" id="retakeBtn" style="display: none;">
+                                    <i class="fas fa-redo"></i> Ulangi Foto
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="data-preview" id="dataPreview">
+                    <h3><i class="fas fa-eye"></i> Preview Data</h3>
+                    <div class="data-item">
+                        <span class="data-label">Nama Pegawai:</span>
+                        <span class="data-value" id="previewNamaPegawai">-</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">Nomor Surat:</span>
+                        <span class="data-value" id="previewNomorSurat">-</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">Tanggal Surat:</span>
+                        <span class="data-value" id="previewTanggalSurat">-</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">Perihal Surat:</span>
+                        <span class="data-value" id="previewPerihalSurat">-</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">Tujuan Surat:</span>
+                        <span class="data-value" id="previewTujuanSurat">-</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">Nomor Lengkap:</span>
+                        <span class="data-value" id="previewNomorLengkap">-</span>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Simpan Data Surat
+                    </button>
+                    <button type="reset" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Reset Form
+                    </button>
+                    <button type="button" class="btn btn-success" id="previewBtn">
+                        <i class="fas fa-eye"></i> Preview Data
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Auto-generate nomor surat lengkap
+        document.getElementById('nomorSurat').addEventListener('input', generateNomorLengkap);
+        document.getElementById('tanggalSurat').addEventListener('change', generateNomorLengkap);
+
+        function generateNomorLengkap() {
+            const nomor = document.getElementById('nomorSurat').value;
+            const tanggal = document.getElementById('tanggalSurat').value;
+            
+            if (nomor && tanggal) {
+                const date = new Date(tanggal);
+                const bulan = date.toLocaleDateString('id-ID', { month: 'long' });
+                const tahun = date.getFullYear();
+                
+                document.getElementById('nomorSuratLengkap').value = 
+                    `${nomor} - ${bulan} ${tahun}`;
+            }
+        }
+
+        // Upload file handling
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('uploadSurat');
+        const preview = document.getElementById('suratPreview');
+        const previewImage = document.getElementById('previewImage');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                handleFileSelect(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
+        function handleFileSelect(file) {
+            if (file) {
+                const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Format file tidak didukung. Harap upload PDF, JPG, atau PNG.');
+                    return;
+                }
+
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Ukuran file terlalu besar. Maksimal 5MB.');
+                    return;
+                }
+
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        previewImage.src = e.target.result;
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    preview.innerHTML = '<p>File PDF: ' + file.name + '</p>';
+                    preview.style.display = 'block';
+                }
+            }
+        }
+
+        // Camera functionality
+        const cameraView = document.getElementById('cameraView');
+        const cameraCanvas = document.getElementById('cameraCanvas');
+        const capturedImage = document.getElementById('capturedImage');
+        const startCameraBtn = document.getElementById('startCamera');
+        const captureBtn = document.getElementById('captureBtn');
+        const retakeBtn = document.getElementById('retakeBtn');
+
+        let stream = null;
+
+        startCameraBtn.addEventListener('click', async () => {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                cameraView.srcObject = stream;
+                cameraView.style.display = 'block';
+                startCameraBtn.style.display = 'none';
+                captureBtn.style.display = 'inline-flex';
+            } catch (err) {
+                alert('Tidak dapat mengakses kamera: ' + err.message);
+            }
+        });
+
+        captureBtn.addEventListener('click', () => {
+            const context = cameraCanvas.getContext('2d');
+            cameraCanvas.width = cameraView.videoWidth;
+            cameraCanvas.height = cameraView.videoHeight;
+            context.drawImage(cameraView, 0, 0);
+            
+            capturedImage.src = cameraCanvas.toDataURL('image/jpeg');
+            capturedImage.style.display = 'block';
+            cameraView.style.display = 'none';
+            captureBtn.style.display = 'none';
+            retakeBtn.style.display = 'inline-flex';
+            
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+        });
+
+        retakeBtn.addEventListener('click', () => {
+            capturedImage.style.display = 'none';
+            retakeBtn.style.display = 'none';
+            startCameraBtn.style.display = 'inline-flex';
+            capturedImage.src = '';
+        });
+
+        // Preview data functionality
+        document.getElementById('previewBtn').addEventListener('click', function() {
+            const namaPegawai = document.getElementById('namaPegawai').value;
+            const nomorSurat = document.getElementById('nomorSurat').value;
+            const tanggalSurat = document.getElementById('tanggalSurat').value;
+            const perihalSurat = document.getElementById('perihalSurat').value;
+            const tujuanSurat = document.getElementById('tujuanSurat').value;
+            const nomorLengkap = document.getElementById('nomorSuratLengkap').value;
+
+            if (!namaPegawai || !nomorSurat || !tanggalSurat || !perihalSurat || !tujuanSurat) {
+                alert('Harap isi semua field wajib terlebih dahulu!');
+                return;
+            }
+
+            // Update preview data
+            document.getElementById('previewNamaPegawai').textContent = namaPegawai;
+            document.getElementById('previewNomorSurat').textContent = nomorSurat;
+            document.getElementById('previewTanggalSurat').textContent = new Date(tanggalSurat).toLocaleDateString('id-ID');
+            document.getElementById('previewPerihalSurat').textContent = perihalSurat;
+            document.getElementById('previewTujuanSurat').textContent = tujuanSurat;
+            document.getElementById('previewNomorLengkap').textContent = nomorLengkap;
+
+            // Show preview section
+            document.getElementById('dataPreview').style.display = 'block';
+        });
+
+        // Form submission
+        document.getElementById('suratForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validasi form
+            const requiredFields = ['namaPegawai', 'nomorSurat', 'tanggalSurat', 'perihalSurat', 'tujuanSurat', 'uploadSurat'];
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                const element = document.getElementById(field);
+                if (!element.value) {
+                    isValid = false;
+                    element.style.borderColor = '#e74c3c';
+                } else {
+                    element.style.borderColor = '#e0e0e0';
+                }
+            });
+
+            if (!isValid) {
+                alert('Harap lengkapi semua field yang wajib diisi!');
+                return;
+            }
+
+            // Simpan data (simulasi)
+            const formData = {
+                timestamp: new Date().toISOString(),
+                namaPegawai: document.getElementById('namaPegawai').value,
+                nomorSurat: document.getElementById('nomorSurat').value,
+                tanggalSurat: document.getElementById('tanggalSurat').value,
+                perihalSurat: document.getElementById('perihalSurat').value,
+                tujuanSurat: document.getElementById('tujuanSurat').value,
+                nomorSuratLengkap: document.getElementById('nomorSuratLengkap').value,
+                fileName: fileInput.files[0] ? fileInput.files[0].name : 'Tidak ada file',
+                hasPhoto: !!capturedImage.src
+            };
+
+            // Simulasi penyimpanan data
+            console.log('Data surat keluar:', formData);
+            
+            // Tampilkan pesan sukses
+            document.getElementById('successMessage').style.display = 'block';
+            
+            // Reset form setelah 2 detik
+            setTimeout(() => {
+                this.reset();
+                preview.style.display = 'none';
+                capturedImage.style.display = 'none';
+                retakeBtn.style.display = 'none';
+                startCameraBtn.style.display = 'inline-flex';
+                document.getElementById('dataPreview').style.display = 'none';
+                document.getElementById('successMessage').style.display = 'none';
+                generateNomorLengkap();
+            }, 3000);
+        });
+
+        // Set tanggal hari ini sebagai default
+        document.getElementById('tanggalSurat').valueAsDate = new Date();
+        generateNomorLengkap();
+    </script>
+</body>
+</html>
